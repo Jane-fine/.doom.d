@@ -3,28 +3,25 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-;; my private config
-;;
-;;key-banding form 21 days learning emacs
-;; bind app key to super
-;(setq w32-apps-modifier 'super)
-;;
-;(global-set-key (kbd "s-a") 'mark-whole-buffer) ;;对应Windows上面的Ctrl-a 全选
-;(global-set-key (kbd "s-c") 'kill-ring-save) ;;对应Windows上面的Ctrl-c 复制
-;(global-set-key (kbd "s-s") 'save-buffer) ;; 对应Windows上面的Ctrl-s 保存
-;(global-set-key (kbd "s-v") 'yank) ;对应Windows上面的Ctrl-v 粘贴
-;(global-set-key (kbd "s-z") 'undo) ;对应Windows上面的Ctrol-z 撤销-;;
-;(global-set-key (kbd "s-x") 'kill-region) ;对应Windows上面的Ctrol-x 剪切
-;
-;; 中英文切换绑定shift
-;; pyim-toggle-input-ascii  shift
-;?(setq pyim-toggle-input-ascii )
+;;; my private config
 
+;;;key-banding form 21 days learning emacs
+;; bind app key to super
+;;(setq w32-apps-modifier 'super)
+;;
+;;(global-set-key (kbd "s-a") 'mark-whole-buffer) ;;对应Windows上面的Ctrl-a 全选
+;;(global-set-key (kbd "s-c") 'kill-ring-save) ;;对应Windows上面的Ctrl-c 复制
+;;(global-set-key (kbd "s-s") 'save-buffer) ;; 对应Windows上面的Ctrl-s 保存
+;;(global-set-key (kbd "s-v") 'yank) ;对应Windows上面的Ctrl-v 粘贴
+;;(global-set-key (kbd "s-z") 'undo) ;对应Windows上面的Ctrol-z 撤销-;;
+;;(global-set-key (kbd "s-x") 'kill-region) ;对应Windows上面的Ctrol-x 剪切
+
+;;; keymap 案例
 ;(map! :leader
 ;      (:prefix ("a" . "applications")
 ;       :desc "Export Org to HTML"
 ;       "e" #'org-html-export-to-html))
-;;
+
 ;;rime
 ;;(use-package! rime
 ;;  :custom
@@ -34,16 +31,80 @@
 ;;  :ensure t   ;Auto-install the package from Melpa
 ;;  :pin melpa  ;`package-archives' should already have ("melpa" . "https://melpa.org/packages/")
 ;;  :after ox)
+
+;;; pyim 个人配置
+(use-package! liberime)
+
+(use-package! pyim
+  
+  :init
+  (setq pyim-title "C")
+  (require 'pyim-dregcache)
+  (require 'pyim-cregexp)
+  (require 'pyim-cstring)
+  (require 'pyim-basedict)
+  :config
+
+  ;;自带字典，目前够用
+  (pyim-basedict-enable)
+  (setq pyim-dcache-backend 'pyim-dregcache)
+  
+  (setq pyim-page-tooltip 'popup)
+  (setq pyim-page-style 'one-line)
+  (setq pyim-page-length 7)
+  
+  (setq default-input-method "pyim")
+  (setq pyim-default-scheme 'quanpin)
+
+  (setq-default pyim-punctuation-translate-p '(auto))
+  
+  (global-set-key (kbd "M-p") 'pyim-convert-string-at-point)
+  
+  (setq pyim-cloudim 'baidu)
+  
+  (pyim-isearch-mode 1)
+  
+  (setq pyim-indicator-list (list #'my-pyim-indicator-with-cursor-color #'pyim-indicator-with-modeline))
+  (defun my-pyim-indicator-with-cursor-color (input-method chinese-input-p)
+  (if (not (equal input-method "pyim"))
+      (progn
+        ;; pyim 未激活时的光标颜色设置语句
+        (set-cursor-color "green"))
+    (if chinese-input-p
+        (progn
+          ;; pyim 输入中文时的光标颜色
+          (set-cursor-color "red"))
+      ;; pyim 输入英文时的光标颜色
+      (set-cursor-color "blue"))))
+  
+  (setq-default pyim-english-input-switch-functions
+              '(pyim-probe-program-mode
+                pyim-probe-org-speed-commands
+                pyim-probe-isearch-mode
+                pyim-probe-org-structure-template
+                pyim-probe-dynamic-english))
+
+  (setq-default pyim-punctuation-half-width-functions
+              '(pyim-probe-punctuation-line-beginning
+                pyim-probe-punctuation-after-punctuation))
+
+
+  (global-set-key (kbd "M-f") 'pyim-forward-word)
+  (global-set-key (kbd "M-b") 'pyim-backward-word)
+)
+
+  ;;;设置模糊音
+          ;doc string missing？
+
+;;(require 'liberime nil t)
+;;(require 'pyim-cregexp-utils)
 ;;
-(require 'pyim)
-(require 'liberime nil t)
+;;(require 'popup) ;使用 popup 包，（emacs overlay 机制）
 ;;
-;; 让选词框跟随光标
-(require 'popup) ;使用 popup 包，（emacs overlay 机制）
-(setq pyim-page-tooltip 'popup)
-;;
-;;使用 posframe 来绘制选词框
-;;(require 'posframe)
+;; 显示 7 个候选词
+;;(setq pyim-page-length 7)
+;;使用 Posframe 来绘制选词框
+;;(require 'posframe) ;未安装
 ;;(setq pyim-page-tooltip 'posframe)
 ;;
 ;;按照优先顺序自动选择一个可用的 tooltip
@@ -51,15 +112,9 @@
 ;;总是 minibuffer ?
 ;;
 ;;调整 tooltip 选词框的显示样式
-(setq pyim-page-style 'one-line)
+;;(setq pyim-page-style 'one-line)
 ;;
-;;设置模糊音
-;;(defcustom  pyim-pinyin-fuzzy-alist
-;;       '(("en" "eng")
-;;         ("in" "ing")
-;;         ("un" "ong"))
-;;       :type 'sexp)   ;doc string missing？
-;;
+;;;;
 ;;使用魔术转换器
 ;;用户可以将待选词 “特殊处理” 后再 “上屏”，比如 “简体转繁体” 或者 “输入中文，上屏 英文” 之类的。
 ;; (defun my-converter (string)
@@ -67,15 +122,24 @@
       ;; "“一个超级帅的小伙子”"
     ;; string))
 ;; (setq pyim-outcome-magic-converter #'my-converter) ;未见魔术转换变量
-;;切换全角标点与半角标点
+;;
+;;; 切换全角标点与半角标点
 ;;第一种方法：使用命令 `pyim-punctuation-toggle’，全局切换。
 ;;这个命令主要用来设置变量： `pyim-punctuation-translate-p’,
 ;;用户也可以手动设置这个变量， 比如：
 ;;(setq-default pyim-punctuation-translate-p '(yes))    ;使用全角标点。
 ;;(setq-default pyim-punctuation-translate-p '(no))     ;使用半角标点。
-(setq-default pyim-punctuation-translate-p '(auto))   ;中文使用全角标点，英文使用半角标点。
+;;(setq-default pyim-punctuation-translate-p '(auto))   ;中文使用全角标点，英文使用半角标点。
 ;;第二种方法：使用命令 `pyim-punctuation-translate-at-point’ 只切换光标处标点的样式。
 ;;第三种方法：设置变量 `pyim-outcome-trigger’ ，输入变量设定的字符会切换光标处标点的样式。
+;;
+;;; 中英文切换绑定
+;; pyim-toggle-input-ascii
+;；(global-set-key (kbd "") 'pyim-toggle-input-ascii)
+;; 另解
+;; 通过`emacs -nw`在命令行中启动emacs，
+;; 就可以接管wsl里的emacs窗口渲染
+;; 并且使用windows里的输入法，‘来放到stdin,stdout中’？实现中英文输入
 ;;
 ;;手动加词和删词
 ;;`pyim-convert-string-at-point’ 金手指命令，可以比较方便的添加和删除词条，比如：
@@ -87,64 +151,57 @@
 ;;`pyim-create-word-from-selection’, 选择一个词条，运行这个命令后，就可以将这个 词条添加到个人词库。
 ;;`pyim-delete-word’ 从个人词库中删除当前高亮选择的词条。
 ;;
-(setq pyim-indicator-list (list #'my-pyim-indicator-with-cursor-color #'pyim-indicator-with-modeline))
+;;这个功能有一些限制，
+;;搜索字符串中只能出现 “a-z” 和 “’”，
+;;如果有其他字符（比 如 regexp 操作符），
+;;则自动关闭拼音搜索功能。
+;;开启这个功能后，一些 isearch 扩展有可能失效，
+;;如果遇到这种问题， 只能禁用这个 Minor-mode，然后联系 pyim 的维护者，看有没有法子实现兼容。
+;;用户激活这个 mode 后，可以使用下面的方式 强制关闭 isearch 搜索框中文输入（即使 在 pyim 激活的时候）。
+;;(setq-default pyim-english-input-switch-functions
+;;              '(pyim-probe-isearch-mode))
 
-(defun my-pyim-indicator-with-cursor-color (input-method chinese-input-p)
-  (if (not (equal input-method "pyim"))
-      (progn
-        ;; 用户在这里定义 pyim 未激活时的光标颜色设置语句
-        (set-cursor-color "red"))
-    (if chinese-input-p
-        (progn
-          ;; 用户在这里定义 pyim 输入中文时的光标颜色设置语句
-          (set-cursor-color "green"))
-      ;; 用户在这里定义 pyim 输入英文时的光标颜色设置语句
-      (set-cursor-color "blue"))))
+;;创建一个搜索中文的 regexp
+;;(pyim-cregexp-build ".*nihao.*")
+;;让 vertico, selectrum 等补全框架，通过 orderless 支持拼音搜索候选项功能。
+;;(with-eval-after-load 'vertico
+;;(defun my-orderless-regexp (orig-func component)
+ ;; (let ((result (funcall orig-func component)))
+;; (pyim-cregexp-build result)))
+;;(advice-add 'orderless-regexp :around #'my-orderless-regexp)
 ;;
-;;
-;;(require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
-;;(pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
-;;(setq default-input-method "pyim")
-(setq default-input-method "pyim")
-(with-eval-after-load "liberime"
-  (liberime-try-select-schema "luna_pinyin_simp")
-  (setq pyim-default-scheme 'rime-quanpin))
-;;
-;; pyim
+;;; 拓展pyim-default-scheme-style
+;; 结合rime
+;;(with-eval-after-load "liberime"
+ ;; (liberime-try-select-schema "luna_pinyin_simp")
+ ;; (setq pyim-default-scheme 'rime-quanpin))
+ ;;
+;;(defun completion--regex-pinyin (str)
+;;  (orderless-regexp (pinyinlib-build-regexp-string str)))
+;;(add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
+
+;;; pyim 配置参考
+;;; https://gist.github.com/merrickluo/553f39c131d0eb717cd59f72c9d4b60d
 ;;(use-package! liberime-config)
 ;;(use-package! pyim
-  ;; :quelpa (pyim :fetcher github :repo "merrickluo/pyim")
+  ;;    :quelpa (pyim :fetcher github :repo "merrickluo/pyim") ;在doom里应该在file:~/.doom.d/config.el中这样做
 ;;  :init
 ;;  (setq pyim-title "R")
 ;;  :config
 ;;   (use-package pyim-basedict
 ;;     :config
 ;;     (pyim-basedict-enable))
-;;  (global-set-key (kbd "M-j") 'pyim-convert-string-at-point)
+;;  (global-set-key (kbd "M-p") 'pyim-convert-string-at-point)
 ;;  (setq pyim-dcache-auto-update nil)
 ;;  (setq default-input-method "pyim")
-  ;; 我使用全拼
-;;  (setq pyim-default-scheme 'rime)
-;;  (setq pyim-page-tooltip 'child-frame)
-
   ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
   ;; 我自己使用的中英文动态切换规则是：
   ;; 1. 光标只有在注释里面时，才可以输入中文。
   ;; 2. 光标前是汉字字符时，才能输入中文。
-  ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-;;  (setq-default pyim-english-input-switch-functions
-;;		        '(pyim-probe-dynamic-english
-;;		          pyim-probe-isearch-mode
-;;		          pyim-probe-program-mode
-;;                  pyim-probe-evil-normal-mode
-;;		          pyim-probe-org-structure-template))
-
-;;  (setq-default pyim-punctuation-half-width-functions
-;;		        '(pyim-probe-punctuation-line-beginning
-;;		          pyim-probe-punctuation-after-punctuation)))
+  ;;  使用 M-p 快捷键，强制将光标前的拼音字符串转换为中文。
 
 
-;;使用 org capture
+;;; 使用 org capture
 (with-eval-after-load 'org-capture
       (defun org-hugo-new-subtree-post-capture-template ()
 	"Returns `org-capture' template string for new Hugo post.

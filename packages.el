@@ -49,15 +49,21 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-;(package! tldr)
-;(package! rime)
-; pyim
-(package! pyim
-  :recipe (:host github :repo "tumashu/pyim"
-           :files ()))
-;
- (package! liberime-config
-  :recipe (:host github :repo "merrickluo/liberime"
-           :files ("CMakeLists.txt" "Makefile" "src" "liberime-config.el")))
+;;(package! tldr)
+;;(package! rime)
 
-;(package! ox-hugo) 也可以在init
+;;; pyim
+(package! pyim
+  :recipe (:host github
+           :repo "tumashu/pyim"
+           :files ("*.el" "tests/*.el")))
+;;
+(package! liberime-config
+  :recipe (:host github :repo "merrickluo/liberime"
+           :files ("Makefile" "src" "liberime.el")))
+
+;;(package! ox-hugo) 也可以在init
+
+(package! orderless)
+;;(package! pyim)
+(package! pyim-basedict)
